@@ -775,14 +775,6 @@
                             <div class="metadata-label">⏰ Hora</div>
                             <div class="metadata-value" id="hora">--:--:--</div>
                         </div>
-                        <div class="metadata-item">
-                            <div class="metadata-label">🔋 Batería</div>
-                            <div class="metadata-value" id="bateria">--</div>
-                        </div>
-                        <div class="metadata-item">
-                            <div class="metadata-label">📡 Conexión</div>
-                            <div class="metadata-value" id="conexion">--</div>
-                        </div>
                     </div>
 
                     <hr style="border: none; border-top: 1px solid #2a2a2a; margin: 1.5rem 0;">
@@ -824,30 +816,17 @@
                 </div>
             </div>
 
-            <!-- MAPA DE CALOR -->
+            <!-- MAPA DE DISTRIBUCIÓN -->
             <div class="card" style="margin-bottom: 2rem;">
-                <h2>Mapa de Distribución Espacial</h2>
-                <p style="font-size: 13px; color: #888; margin-bottom: 1rem;">
-                    Densidad de hallazgos por zona del páramo (8x8 km)
+                <h2>Distribución de Hallazgos por Tipo</h2>
+                <p style="font-size: 13px; color: #888; margin-bottom: 1.5rem;">
+                    Localización geográfica de cada hallazgo en el páramo
                 </p>
-                <div class="mapa-contenedor">
-                    <div class="mapa-grid" id="mapa-grid"></div>
-                    <div class="mapa-leyenda">
-                        <div class="leyenda-item">
-                            <div class="leyenda-color" style="background: #ff4444;"></div>
-                            <span>Muy Alta (5+)</span>
-                        </div>
-                        <div class="leyenda-item">
-                            <div class="leyenda-color" style="background: #ff8c42;"></div>
-                            <span>Alta (3-4)</span>
-                        </div>
-                        <div class="leyenda-item">
-                            <div class="leyenda-color" style="background: #ffd700;"></div>
-                            <span>Media (1-2)</span>
-                        </div>
-                        <div class="leyenda-item">
-                            <div class="leyenda-color" style="background: #4CAF50;"></div>
-                            <span>Baja (0)</span>
+                <div style="background: #0f0f0f; border: 1px solid #2a2a2a; border-radius: 8px; padding: 2rem; min-height: 400px;">
+                    <div id="mapa-visual" style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; align-items: flex-start;">
+                        <div style="text-align: center; color: #666; width: 100%; padding: 2rem;">
+                            <div style="font-size: 48px; margin-bottom: 1rem;">🗺️</div>
+                            <p>Captura hallazgos para ver su distribución en el mapa</p>
                         </div>
                     </div>
                 </div>
@@ -997,24 +976,6 @@
                 hour12: false
             });
 
-            // Batería real
-            if (navigator.getBattery) {
-                navigator.getBattery().then(battery => {
-                    document.getElementById('bateria').textContent = Math.round(battery.level * 100) + '%';
-                });
-            } else {
-                document.getElementById('bateria').textContent = '--';
-            }
-
-            // Conexión real
-            if (navigator.onLine) {
-                document.getElementById('conexion').textContent = '🟢 En línea';
-                document.getElementById('conexion').style.color = '#4CAF50';
-            } else {
-                document.getElementById('conexion').textContent = '🔴 Sin conexión';
-                document.getElementById('conexion').style.color = '#f44336';
-            }
-
             // Almacenamiento
             document.getElementById('almacenamiento').textContent = hallazgos.length + ' registro' + (hallazgos.length !== 1 ? 's' : '');
         }
@@ -1110,51 +1071,94 @@
             document.getElementById('cobertura').textContent = Math.min(100, Math.round((total / 20) * 100)) + '%';
         }
 
-        // ACTUALIZAR MAPA DE CALOR
+        // ACTUALIZAR MAPA DE DISTRIBUCIÓN
         function updateHeatmap() {
-            const grid = document.getElementById('mapa-grid');
-            grid.innerHTML = '';
+            const container = document.getElementById('mapa-visual');
 
-            // Crear matriz 8x8
-            const mapa = Array(8).fill(null).map(() => Array(8).fill(0));
+            if (hallazgos.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: #666; width: 100%; padding: 2rem;">
+                        <div style="font-size: 48px; margin-bottom: 1rem;">🗺️</div>
+                        <p>Captura hallazgos para ver su distribución en el mapa</p>
+                    </div>
+                `;
+                return;
+            }
 
-            // Distribuir hallazgos en el mapa
-            hallazgos.forEach(h => {
-                const x = Math.floor((h.lng % 1) * 8);
-                const y = Math.floor((h.lat % 1) * 8);
-                if (x >= 0 && x < 8 && y >= 0 && y < 8) {
-                    mapa[y][x]++;
-                }
-            });
+            // Calcular rango de coordenadas
+            const lats = hallazgos.map(h => h.lat);
+            const lngs = hallazgos.map(h => h.lng);
+            const minLat = Math.min(...lats);
+            const maxLat = Math.max(...lats);
+            const minLng = Math.min(...lngs);
+            const maxLng = Math.max(...lngs);
+            const latRange = maxLat - minLat || 0.01;
+            const lngRange = maxLng - minLng || 0.01;
 
-            // Crear celdas
-            mapa.forEach((fila, y) => {
-                fila.forEach((count, x) => {
-                    const celda = document.createElement('div');
-                    celda.className = 'mapa-celda';
+            // Crear contenedor de mapa
+            const mapWidth = 600;
+            const mapHeight = 400;
+            const padding = 40;
 
-                    if (count >= 5) {
-                        celda.classList.add('caliente');
-                    } else if (count >= 3) {
-                        celda.classList.add('tibio');
-                    } else if (count >= 1) {
-                        celda.classList.add('templado');
-                    } else {
-                        celda.classList.add('frio');
-                    }
+            container.innerHTML = `
+                <div style="position: relative; width: 100%; max-width: 600px; margin: 0 auto;">
+                    <svg width="${mapWidth}" height="${mapHeight}" style="background: linear-gradient(135deg, #1a3a2a 0%, #0f2a1f 100%); border-radius: 8px; border: 1px solid #2a2a2a;">
+                        <!-- Grid base -->
+                        <defs>
+                            <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                                <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#2a2a2a" stroke-width="0.5"/>
+                            </pattern>
+                        </defs>
+                        <rect width="${mapWidth}" height="${mapHeight}" fill="url(#grid)"/>
+                        
+                        <!-- Marca los hallazgos -->
+                        ${hallazgos.map((h, idx) => {
+                            const x = padding + ((h.lng - minLng) / lngRange) * (mapWidth - 2 * padding);
+                            const y = padding + ((maxLat - h.lat) / latRange) * (mapHeight - 2 * padding);
+                            const tipo = tipos[h.tipo];
+                            const color = {
+                                especie: '#2196F3',
+                                flora: '#4CAF50',
+                                agua: '#00BCD4',
+                                degradacion: '#FF9800',
+                                riesgo: '#f44336'
+                            }[h.tipo] || '#999';
 
-                    celda.textContent = count > 0 ? count : '';
-                    celda.style.display = 'flex';
-                    celda.style.alignItems = 'center';
-                    celda.style.justifyContent = 'center';
-                    celda.style.fontWeight = '600';
-                    celda.style.color = count > 2 ? '#000' : '#fff';
-
-                    celda.title = `Zona (${x},${y}): ${count} hallazgo${count !== 1 ? 's' : ''}`;
-
-                    grid.appendChild(celda);
-                });
-            });
+                            return `
+                                <g>
+                                    <circle cx="${x}" cy="${y}" r="6" fill="${color}" opacity="0.7" stroke="white" stroke-width="1"/>
+                                    <circle cx="${x}" cy="${y}" r="10" fill="${color}" opacity="0.2"/>
+                                    <title>${tipo.label} - ${h.descripcion.substring(0, 30)}</title>
+                                </g>
+                            `;
+                        }).join('')}
+                    </svg>
+                    
+                    <!-- Leyenda -->
+                    <div style="margin-top: 1.5rem; display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 12px; height: 12px; border-radius: 50%; background: #2196F3; border: 1px solid white;"></div>
+                            <span style="font-size: 12px; color: #aaa;">Especies (${hallazgos.filter(h => h.tipo === 'especie').length})</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 12px; height: 12px; border-radius: 50%; background: #4CAF50; border: 1px solid white;"></div>
+                            <span style="font-size: 12px; color: #aaa;">Flora (${hallazgos.filter(h => h.tipo === 'flora').length})</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 12px; height: 12px; border-radius: 50%; background: #00BCD4; border: 1px solid white;"></div>
+                            <span style="font-size: 12px; color: #aaa;">Agua (${hallazgos.filter(h => h.tipo === 'agua').length})</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 12px; height: 12px; border-radius: 50%; background: #FF9800; border: 1px solid white;"></div>
+                            <span style="font-size: 12px; color: #aaa;">Degradación (${hallazgos.filter(h => h.tipo === 'degradacion').length})</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 12px; height: 12px; border-radius: 50%; background: #f44336; border: 1px solid white;"></div>
+                            <span style="font-size: 12px; color: #aaa;">Riesgos (${hallazgos.filter(h => h.tipo === 'riesgo').length})</span>
+                        </div>
+                    </div>
+                </div>
+            `;
         }
 
         // ACTUALIZAR LISTA DE ESPECIES
@@ -1264,17 +1268,6 @@
         // INICIALIZAR
         updateAll();
         setInterval(updateMetadata, 1000);
-
-        // LISTENER DE CONEXIÓN
-        window.addEventListener('online', () => {
-            showAlert('✓ Conexión recuperada', 'success');
-            updateMetadata();
-        });
-
-        window.addEventListener('offline', () => {
-            showAlert('⚠️ Sin conexión a internet', 'error');
-            updateMetadata();
-        });
     </script>
 </body>
 </html>
