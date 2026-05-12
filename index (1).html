@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoreo Páramo Santurbán</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f0f0f;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        .header-icon {
+            font-size: 48px;
+            filter: drop-shadow(0 0 8px rgba(76, 175, 80, 0.3));
+        }
+
+        .header-content h1 {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-content p {
+            font-size: 14px;
+            color: #888;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #2a2a2a;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 12px 16px;
+            font-size: 14px;
+            color: #888;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .tab-btn:hover {
+            color: #e0e0e0;
+        }
+
+        .tab-btn.active {
+            color: #4CAF50;
+            border-bottom-color: #4CAF50;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+            padding: 2rem;
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            border-color: #3a3a3a;
+            background: #1f1f1f;
+        }
+
+        .card h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #fff;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            color: #aaa;
+            margin-bottom: 8px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #2a2a2a;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            background: #0f0f0f;
+            color: #e0e0e0;
+            transition: all 0.3s;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+            background: #161616;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #4CAF50;
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-warning {
+            background: #FF9800;
+            color: #000;
+        }
+
+        .btn-warning:hover {
+            background: #FB8C00;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 152, 0, 0.3);
+        }
+
+        .btn-danger {
+            background: #f44336;
+            color: #fff;
+        }
+
+        .btn-danger:hover {
+            background: #da190b;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(244, 67, 54, 0.3);
+        }
+
+        .btn-info {
+            background: #2196F3;
+            color: #fff;
+        }
+
+        .btn-info:hover {
+            background: #1976D2;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(33, 150, 243, 0.3);
+        }
+
+        .btn-success {
+            background: #4CAF50;
+            color: #000;
+        }
+
+        .btn-success:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
+        }
+
+        .metadata {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .metadata-item {
+            background: #0f0f0f;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #2a2a2a;
+        }
+
+        .metadata-label {
+            font-size: 12px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .metadata-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: #0f0f0f;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #2a2a2a;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            border-color: #3a3a3a;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card.stat-especies .stat-value {
+            color: #4CAF50;
+        }
+
+        .stat-card.stat-alertas .stat-value {
+            color: #FF9800;
+        }
+
+        .stat-card.stat-hallazgos .stat-value {
+            color: #2196F3;
+        }
+
+        .stat-card.stat-cobertura .stat-value {
+            color: #9C27B0;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 14px;
+            display: none;
+            animation: slideDown 0.3s;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-success {
+            background: rgba(76, 175, 80, 0.15);
+            color: #81C784;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .alert-error {
+            background: rgba(244, 67, 54, 0.15);
+            color: #EF5350;
+            border: 1px solid rgba(244, 67, 54, 0.3);
+        }
+
+        .species-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .species-item {
+            background: #0f0f0f;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #2a2a2a;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s;
+        }
+
+        .species-item:hover {
+            border-color: #3a3a3a;
+            background: #161616;
+        }
+
+        .species-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .species-icon.especie {
+            background: rgba(33, 150, 243, 0.15);
+        }
+
+        .species-icon.degradacion {
+            background: rgba(255, 152, 0, 0.15);
+        }
+
+        .species-icon.flora {
+            background: rgba(76, 175, 80, 0.15);
+        }
+
+        .species-icon.agua {
+            background: rgba(0, 188, 212, 0.15);
+        }
+
+        .species-icon.riesgo {
+            background: rgba(244, 67, 54, 0.15);
+        }
+
+        .species-info {
+            flex: 1;
+        }
+
+        .species-name {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .species-details {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .mapa-contenedor {
+            background: #0f0f0f;
+            border: 1px solid #2a2a2a;
+            border-radius: 8px;
+            padding: 2rem;
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .mapa-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+            gap: 4px;
+            margin-top: 1rem;
+        }
+
+        .mapa-celda {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mapa-celda:hover {
+            border-color: #3a3a3a;
+        }
+
+        .mapa-celda.caliente {
+            background: #ff4444;
+            border-color: #ff0000;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+
+        .mapa-celda.tibio {
+            background: #ff8c42;
+            border-color: #ff6600;
+            box-shadow: 0 0 8px rgba(255, 140, 0, 0.4);
+        }
+
+        .mapa-celda.templado {
+            background: #ffd700;
+            border-color: #ffaa00;
+            box-shadow: 0 0 6px rgba(255, 215, 0, 0.3);
+        }
+
+        .mapa-celda.frio {
+            background: #4CAF50;
+            border-color: #45a049;
+            box-shadow: 0 0 6px rgba(76, 175, 80, 0.3);
+        }
+
+        .mapa-leyenda {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .leyenda-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+        }
+
+        .leyenda-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            border: 1px solid #3a3a3a;
+        }
+
+        .historial-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .historial-item {
+            background: #0f0f0f;
+            padding: 1.25rem;
+            border-radius: 8px;
+            border: 1px solid #2a2a2a;
+            transition: all 0.3s;
+        }
+
+        .historial-item:hover {
+            border-color: #3a3a3a;
+            background: #161616;
+        }
+
+        .historial-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+
+        .historial-tipo {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tipo-especie {
+            background: rgba(33, 150, 243, 0.15);
+            color: #64B5F6;
+        }
+
+        .tipo-degradacion {
+            background: rgba(255, 152, 0, 0.15);
+            color: #FFB74D;
+        }
+
+        .tipo-flora {
+            background: rgba(76, 175, 80, 0.15);
+            color: #81C784;
+        }
+
+        .tipo-agua {
+            background: rgba(0, 188, 212, 0.15);
+            color: #4DD0E1;
+        }
+
+        .tipo-riesgo {
+            background: rgba(244, 67, 54, 0.15);
+            color: #EF5350;
+        }
+
+        .historial-fecha {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .historial-descripcion {
+            color: #ccc;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .historial-coords {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .historial-vacio {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #666;
+        }
+
+        .ubicacion-coords {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .coord-input {
+            position: relative;
+        }
+
+        .coord-input label {
+            font-size: 12px;
+            color: #aaa;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        @media (max-width: 600px) {
+            .btn-group {
+                grid-template-columns: 1fr;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .mapa-grid {
+                grid-template-columns: repeat(6, 1fr);
+                grid-template-rows: repeat(6, 1fr);
+            }
+
+            .historial-coords {
+                flex-direction: column;
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .switch-div {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .switch-div span {
+            font-size: 12px;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-icon">⛰️</div>
+            <div class="header-content">
+                <h1>Monitoreo Páramo Santurbán</h1>
+                <p>Sistema de vigilancia ambiental en tiempo real | Santander, Colombia</p>
+            </div>
+        </div>
+
+        <!-- TABS -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab(event, 'capture')">
+                📸 Capturar Hallazgo
+            </button>
+            <button class="tab-btn" onclick="switchTab(event, 'dashboard')">
+                📊 Dashboard
+            </button>
+            <button class="tab-btn" onclick="switchTab(event, 'historial')">
+                📋 Historial
+            </button>
+        </div>
+
+        <!-- TAB: CAPTURAR -->
+        <div id="capture" class="tab-content active">
+            <div class="grid">
+                <!-- FORMULARIO -->
+                <div class="card">
+                    <h2>Nuevo Hallazgo</h2>
+                    <div id="alert" class="alert"></div>
+
+                    <form onsubmit="submitHallazgo(event)">
+                        <div class="form-group">
+                            <label>Tipo de Hallazgo *</label>
+                            <select id="tipo" required>
+                                <option value="">Seleccionar...</option>
+                                <option value="especie">🦅 Especie Avistada</option>
+                                <option value="flora">🌿 Flora Nativa</option>
+                                <option value="agua">💧 Fuente de Agua</option>
+                                <option value="degradacion">⚠️ Degradación</option>
+                                <option value="riesgo">🔴 Riesgo Ambiental</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Descripción *</label>
+                            <textarea id="descripcion" placeholder="Detalles del hallazgo..." required></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Coordenadas GPS *</label>
+                            <div class="ubicacion-coords">
+                                <div class="coord-input">
+                                    <label style="font-size: 11px;">Latitud</label>
+                                    <input type="number" id="lat" placeholder="5.1234" step="0.0001" required>
+                                </div>
+                                <div class="coord-input">
+                                    <label style="font-size: 11px;">Longitud</label>
+                                    <input type="number" id="lng" placeholder="-73.1234" step="0.0001" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Altitud (metros) *</label>
+                            <input type="number" id="altitud" placeholder="3850" value="3850" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Fotografía *</label>
+                            <div style="border: 2px dashed #2a2a2a; border-radius: 8px; padding: 1.5rem; text-align: center; background: #0f0f0f; cursor: pointer; transition: all 0.3s;" id="dropzone">
+                                <div id="preview-container" style="display: none;">
+                                    <img id="preview-img" style="max-width: 100%; max-height: 250px; border-radius: 8px; margin-bottom: 1rem;">
+                                    <button type="button" class="btn btn-danger" style="margin-top: 0.5rem;" onclick="clearPhoto()">
+                                        ✕ Quitar Foto
+                                    </button>
+                                </div>
+                                <div id="dropzone-content">
+                                    <div style="font-size: 32px; margin-bottom: 0.5rem;">📷</div>
+                                    <p style="color: #aaa; margin-bottom: 0.5rem;">Arrastra una imagen aquí o haz clic</p>
+                                    <p style="font-size: 12px; color: #666;">Formatos: JPG, PNG, WebP (máx 5 MB)</p>
+                                </div>
+                                <input type="file" id="photo-input" accept="image/*" style="display: none;" onchange="handlePhotoSelect(event)">
+                            </div>
+                        </div>
+
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-warning" onclick="getLocation()">
+                                📍 Obtener GPS
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                ✓ Guardar Hallazgo
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- METADATOS -->
+                <div class="card">
+                    <h2>Metadatos del Sistema</h2>
+
+                    <div class="metadata">
+                        <div class="metadata-item">
+                            <div class="metadata-label">📅 Fecha</div>
+                            <div class="metadata-value" id="fecha">--/--/----</div>
+                        </div>
+                        <div class="metadata-item">
+                            <div class="metadata-label">⏰ Hora</div>
+                            <div class="metadata-value" id="hora">--:--:--</div>
+                        </div>
+                        <div class="metadata-item">
+                            <div class="metadata-label">🔋 Batería</div>
+                            <div class="metadata-value" id="bateria">--</div>
+                        </div>
+                        <div class="metadata-item">
+                            <div class="metadata-label">📡 Conexión</div>
+                            <div class="metadata-value" id="conexion">--</div>
+                        </div>
+                    </div>
+
+                    <hr style="border: none; border-top: 1px solid #2a2a2a; margin: 1.5rem 0;">
+
+                    <div style="background: #0f0f0f; padding: 1rem; border-radius: 8px; border: 1px solid #2a2a2a;">
+                        <div style="font-size: 12px; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
+                            📦 Almacenamiento Local
+                        </div>
+                        <div style="font-size: 20px; font-weight: 700; color: #4CAF50;" id="almacenamiento">
+                            0 registros
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: DASHBOARD -->
+        <div id="dashboard" class="tab-content">
+            <!-- ESTADÍSTICAS -->
+            <div class="card" style="margin-bottom: 2rem;">
+                <h2>Estadísticas Generales</h2>
+                <div class="stats">
+                    <div class="stat-card stat-hallazgos">
+                        <div class="stat-value" id="total-hallazgos">0</div>
+                        <div class="stat-label">Hallazgos Totales</div>
+                    </div>
+                    <div class="stat-card stat-especies">
+                        <div class="stat-value" id="total-especies">0</div>
+                        <div class="stat-label">Especies Encontradas</div>
+                    </div>
+                    <div class="stat-card stat-alertas">
+                        <div class="stat-value" id="total-alertas">0</div>
+                        <div class="stat-label">Alertas Activas</div>
+                    </div>
+                    <div class="stat-card stat-cobertura">
+                        <div class="stat-value" id="cobertura">0%</div>
+                        <div class="stat-label">Cobertura Monitoreada</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MAPA DE CALOR -->
+            <div class="card" style="margin-bottom: 2rem;">
+                <h2>Mapa de Distribución Espacial</h2>
+                <p style="font-size: 13px; color: #888; margin-bottom: 1rem;">
+                    Densidad de hallazgos por zona del páramo (8x8 km)
+                </p>
+                <div class="mapa-contenedor">
+                    <div class="mapa-grid" id="mapa-grid"></div>
+                    <div class="mapa-leyenda">
+                        <div class="leyenda-item">
+                            <div class="leyenda-color" style="background: #ff4444;"></div>
+                            <span>Muy Alta (5+)</span>
+                        </div>
+                        <div class="leyenda-item">
+                            <div class="leyenda-color" style="background: #ff8c42;"></div>
+                            <span>Alta (3-4)</span>
+                        </div>
+                        <div class="leyenda-item">
+                            <div class="leyenda-color" style="background: #ffd700;"></div>
+                            <span>Media (1-2)</span>
+                        </div>
+                        <div class="leyenda-item">
+                            <div class="leyenda-color" style="background: #4CAF50;"></div>
+                            <span>Baja (0)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HALLAZGOS RECIENTES -->
+            <div class="card">
+                <h2>Hallazgos Recientes</h2>
+                <div class="species-list" id="species-list">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📌</div>
+                        <p>No hay hallazgos registrados aún</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: HISTORIAL -->
+        <div id="historial" class="tab-content">
+            <div class="card">
+                <h2>Registro Completo de Hallazgos</h2>
+                <div class="historial-list" id="historial-list">
+                    <div class="historial-vacio">
+                        <div style="font-size: 32px; margin-bottom: 1rem;">📋</div>
+                        <p>No hay hallazgos registrados</p>
+                        <p style="font-size: 12px; margin-top: 8px;">
+                            Captura tu primer hallazgo desde la pestaña "Capturar Hallazgo"
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DATOS GLOBALES
+        let hallazgos = JSON.parse(localStorage.getItem('hallazgos') || '[]');
+        let currentPhotoData = null;
+
+        // MANEJO DE FOTOS
+        const dropzone = document.getElementById('dropzone');
+        const photoInput = document.getElementById('photo-input');
+
+        dropzone.addEventListener('click', () => photoInput.click());
+
+        dropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropzone.style.borderColor = '#4CAF50';
+            dropzone.style.background = 'rgba(76, 175, 80, 0.05)';
+        });
+
+        dropzone.addEventListener('dragleave', () => {
+            dropzone.style.borderColor = '#2a2a2a';
+            dropzone.style.background = '#0f0f0f';
+        });
+
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.style.borderColor = '#2a2a2a';
+            dropzone.style.background = '#0f0f0f';
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handlePhotoSelect({ target: { files: files } });
+            }
+        });
+
+        function handlePhotoSelect(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            if (file.size > 5 * 1024 * 1024) {
+                showAlert('✗ La imagen es muy grande (máx 5 MB)', 'error');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                compressImage(event.target.result, (compressedData) => {
+                    currentPhotoData = compressedData;
+                    showPhotoPreview(compressedData);
+                    showAlert('✓ Foto capturada correctamente', 'success');
+                    setTimeout(() => {
+                        document.getElementById('alert').style.display = 'none';
+                    }, 2000);
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function compressImage(dataUrl, callback) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height) {
+                    if (width > 800) {
+                        height *= 800 / width;
+                        width = 800;
+                    }
+                } else {
+                    if (height > 800) {
+                        width *= 800 / height;
+                        height = 800;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                callback(canvas.toDataURL('image/jpeg', 0.7));
+            };
+            img.src = dataUrl;
+        }
+
+        function showPhotoPreview(dataUrl) {
+            document.getElementById('dropzone-content').style.display = 'none';
+            document.getElementById('preview-container').style.display = 'block';
+            document.getElementById('preview-img').src = dataUrl;
+        }
+
+        function clearPhoto() {
+            currentPhotoData = null;
+            photoInput.value = '';
+            document.getElementById('dropzone-content').style.display = 'block';
+            document.getElementById('preview-container').style.display = 'none';
+            dropzone.style.borderColor = '#2a2a2a';
+            dropzone.style.background = '#0f0f0f';
+        }
+
+        // TIPOS Y COLORES
+        const tipos = {
+            especie: { emoji: '🦅', label: 'Especie Avistada', color: 'especie' },
+            flora: { emoji: '🌿', label: 'Flora Nativa', color: 'flora' },
+            agua: { emoji: '💧', label: 'Fuente de Agua', color: 'agua' },
+            degradacion: { emoji: '⚠️', label: 'Degradación', color: 'degradacion' },
+            riesgo: { emoji: '🔴', label: 'Riesgo Ambiental', color: 'riesgo' }
+        };
+
+        // ACTUALIZAR METADATOS
+        function updateMetadata() {
+            const now = new Date();
+            document.getElementById('fecha').textContent = now.toLocaleDateString('es-ES');
+            document.getElementById('hora').textContent = now.toLocaleTimeString('es-ES', {
+                hour12: false
+            });
+
+            // Batería real
+            if (navigator.getBattery) {
+                navigator.getBattery().then(battery => {
+                    document.getElementById('bateria').textContent = Math.round(battery.level * 100) + '%';
+                });
+            } else {
+                document.getElementById('bateria').textContent = '--';
+            }
+
+            // Conexión real
+            if (navigator.onLine) {
+                document.getElementById('conexion').textContent = '🟢 En línea';
+                document.getElementById('conexion').style.color = '#4CAF50';
+            } else {
+                document.getElementById('conexion').textContent = '🔴 Sin conexión';
+                document.getElementById('conexion').style.color = '#f44336';
+            }
+
+            // Almacenamiento
+            document.getElementById('almacenamiento').textContent = hallazgos.length + ' registro' + (hallazgos.length !== 1 ? 's' : '');
+        }
+
+        // OBTENER UBICACIÓN GPS
+        function getLocation() {
+            if (navigator.geolocation) {
+                showAlert('Obteniendo ubicación GPS...', 'info');
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        document.getElementById('lat').value = position.coords.latitude.toFixed(4);
+                        document.getElementById('lng').value = position.coords.longitude.toFixed(4);
+                        document.getElementById('altitud').value = Math.round(position.coords.altitude || 3850);
+                        showAlert('✓ Ubicación capturada correctamente', 'success');
+                    },
+                    error => {
+                        showAlert('✗ No se pudo obtener la ubicación GPS', 'error');
+                    }
+                );
+            } else {
+                showAlert('✗ Geolocalización no disponible en este navegador', 'error');
+            }
+        }
+
+        // ENVIAR FORMULARIO
+        function submitHallazgo(e) {
+            e.preventDefault();
+
+            const tipo = document.getElementById('tipo').value;
+            const descripcion = document.getElementById('descripcion').value.trim();
+            const lat = parseFloat(document.getElementById('lat').value);
+            const lng = parseFloat(document.getElementById('lng').value);
+            const altitud = parseInt(document.getElementById('altitud').value);
+
+            if (!tipo || !descripcion || !lat || !lng) {
+                showAlert('✗ Por favor completa todos los campos requeridos', 'error');
+                return;
+            }
+
+            if (!currentPhotoData) {
+                showAlert('✗ Por favor agrega una fotografía', 'error');
+                return;
+            }
+
+            const hallazgo = {
+                id: Date.now(),
+                tipo: tipo,
+                descripcion: descripcion,
+                lat: lat,
+                lng: lng,
+                altitud: altitud,
+                foto: currentPhotoData,
+                fecha: new Date().toISOString()
+            };
+
+            hallazgos.push(hallazgo);
+            localStorage.setItem('hallazgos', JSON.stringify(hallazgos));
+
+            // Limpiar formulario
+            document.getElementById('tipo').value = '';
+            document.getElementById('descripcion').value = '';
+            document.getElementById('lat').value = '';
+            document.getElementById('lng').value = '';
+            document.getElementById('altitud').value = '3850';
+            clearPhoto();
+
+            showAlert('✓ Hallazgo sincronizado correctamente', 'success');
+            updateAll();
+
+            // Desaparecer alerta
+            setTimeout(() => {
+                document.getElementById('alert').style.display = 'none';
+            }, 3000);
+        }
+
+        // MOSTRAR ALERTA
+        function showAlert(msg, type) {
+            const alert = document.getElementById('alert');
+            alert.textContent = msg;
+            alert.className = 'alert alert-' + (type === 'success' ? 'success' : type === 'error' ? 'error' : 'success');
+            alert.style.display = 'block';
+        }
+
+        // ACTUALIZAR ESTADÍSTICAS
+        function updateStats() {
+            const total = hallazgos.length;
+            const especies = hallazgos.filter(h => h.tipo === 'especie').length;
+            const alertas = hallazgos.filter(h => h.tipo === 'riesgo' || h.tipo === 'degradacion').length;
+
+            document.getElementById('total-hallazgos').textContent = total;
+            document.getElementById('total-especies').textContent = especies;
+            document.getElementById('total-alertas').textContent = alertas;
+            document.getElementById('cobertura').textContent = Math.min(100, Math.round((total / 20) * 100)) + '%';
+        }
+
+        // ACTUALIZAR MAPA DE CALOR
+        function updateHeatmap() {
+            const grid = document.getElementById('mapa-grid');
+            grid.innerHTML = '';
+
+            // Crear matriz 8x8
+            const mapa = Array(8).fill(null).map(() => Array(8).fill(0));
+
+            // Distribuir hallazgos en el mapa
+            hallazgos.forEach(h => {
+                const x = Math.floor((h.lng % 1) * 8);
+                const y = Math.floor((h.lat % 1) * 8);
+                if (x >= 0 && x < 8 && y >= 0 && y < 8) {
+                    mapa[y][x]++;
+                }
+            });
+
+            // Crear celdas
+            mapa.forEach((fila, y) => {
+                fila.forEach((count, x) => {
+                    const celda = document.createElement('div');
+                    celda.className = 'mapa-celda';
+
+                    if (count >= 5) {
+                        celda.classList.add('caliente');
+                    } else if (count >= 3) {
+                        celda.classList.add('tibio');
+                    } else if (count >= 1) {
+                        celda.classList.add('templado');
+                    } else {
+                        celda.classList.add('frio');
+                    }
+
+                    celda.textContent = count > 0 ? count : '';
+                    celda.style.display = 'flex';
+                    celda.style.alignItems = 'center';
+                    celda.style.justifyContent = 'center';
+                    celda.style.fontWeight = '600';
+                    celda.style.color = count > 2 ? '#000' : '#fff';
+
+                    celda.title = `Zona (${x},${y}): ${count} hallazgo${count !== 1 ? 's' : ''}`;
+
+                    grid.appendChild(celda);
+                });
+            });
+        }
+
+        // ACTUALIZAR LISTA DE ESPECIES
+        function updateSpeciesList() {
+            const list = document.getElementById('species-list');
+            
+            if (hallazgos.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📌</div>
+                        <p>No hay hallazgos registrados aún</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const recientes = hallazgos.slice().reverse().slice(0, 5);
+            list.innerHTML = recientes.map(h => {
+                const tipo = tipos[h.tipo];
+                return `
+                    <div class="species-item">
+                        <div style="flex-shrink: 0;">
+                            ${h.foto ? `<img src="${h.foto}" style="width: 80px; height: 80px; border-radius: 8px; object-fit: cover;">` : '<div style="width: 80px; height: 80px; background: #0f0f0f; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #666;">Sin foto</div>'}
+                        </div>
+                        <div class="species-info">
+                            <div class="species-name">${tipo.label}</div>
+                            <div class="species-details">
+                                ${h.descripcion.substring(0, 60)}${h.descripcion.length > 60 ? '...' : ''}
+                            </div>
+                            <div class="species-details">
+                                📍 ${h.lat.toFixed(4)}, ${h.lng.toFixed(4)} | ${Math.round(h.altitud)} m
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ACTUALIZAR HISTORIAL
+        function updateHistorial() {
+            const list = document.getElementById('historial-list');
+
+            if (hallazgos.length === 0) {
+                list.innerHTML = `
+                    <div class="historial-vacio">
+                        <div style="font-size: 32px; margin-bottom: 1rem;">📋</div>
+                        <p>No hay hallazgos registrados</p>
+                        <p style="font-size: 12px; margin-top: 8px;">
+                            Captura tu primer hallazgo desde la pestaña "Capturar Hallazgo"
+                        </p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = hallazgos.slice().reverse().map(h => {
+                const tipo = tipos[h.tipo];
+                const fecha = new Date(h.fecha);
+                return `
+                    <div class="historial-item">
+                        <div class="historial-header">
+                            <span class="historial-tipo tipo-${h.tipo}">
+                                ${tipo.emoji} ${tipo.label}
+                            </span>
+                            <span class="historial-fecha">
+                                ${fecha.toLocaleString('es-ES')}
+                            </span>
+                        </div>
+                        ${h.foto ? `<img src="${h.foto}" style="width: 100%; max-height: 300px; border-radius: 8px; object-fit: cover; margin: 1rem 0;">` : ''}
+                        <div class="historial-descripcion">
+                            ${h.descripcion}
+                        </div>
+                        <div class="historial-coords">
+                            <span>📍 Lat: ${h.lat.toFixed(4)}</span>
+                            <span>Lng: ${h.lng.toFixed(4)}</span>
+                            <span>📏 Alt: ${Math.round(h.altitud)} m</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // CAMBIAR PESTAÑA
+        function switchTab(e, tabName) {
+            // Eliminar clase active de todos los tabs y botones
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            // Añadir clase active al tab y botón seleccionado
+            document.getElementById(tabName).classList.add('active');
+            e.target.classList.add('active');
+        }
+
+        // ACTUALIZAR TODO
+        function updateAll() {
+            updateMetadata();
+            updateStats();
+            updateHeatmap();
+            updateSpeciesList();
+            updateHistorial();
+        }
+
+        // INICIALIZAR
+        updateAll();
+        setInterval(updateMetadata, 1000);
+
+        // LISTENER DE CONEXIÓN
+        window.addEventListener('online', () => {
+            showAlert('✓ Conexión recuperada', 'success');
+            updateMetadata();
+        });
+
+        window.addEventListener('offline', () => {
+            showAlert('⚠️ Sin conexión a internet', 'error');
+            updateMetadata();
+        });
+    </script>
+</body>
+</html>
